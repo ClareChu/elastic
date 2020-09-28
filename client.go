@@ -7,6 +7,7 @@ package elastic
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -227,8 +228,12 @@ func NewClientFromConfig(cfg *config.Config) (*Client, error) {
 // Notice that you can still override settings by passing additional options,
 // just like with NewClient.
 func NewSimpleClient(options ...ClientOptionFunc) (*Client, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
 	c := &Client{
-		c:                         http.DefaultClient,
+		c:                         client,
 		conns:                     make([]*conn, 0),
 		cindex:                    -1,
 		scheme:                    DefaultScheme,
@@ -1368,13 +1373,10 @@ func (c *Client) PerformRequest(ctx context.Context, opt PerformRequestOptions) 
 				}
 			}
 		}
-		if c.headers != nil && len(c.headers) > 0 {
-			for key, value := range c.headers {
-				for _, v := range value {
-					req.Header.Add(key, v)
-				}
-			}
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
+
 		// Set body
 		if opt.Body != nil {
 			err = req.SetBody(opt.Body, gzipEnabled)

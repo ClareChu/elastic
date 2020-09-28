@@ -1373,9 +1373,6 @@ func (c *Client) PerformRequest(ctx context.Context, opt PerformRequestOptions) 
 				}
 			}
 		}
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
 
 		// Set body
 		if opt.Body != nil {

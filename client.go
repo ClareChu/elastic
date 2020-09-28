@@ -1368,7 +1368,13 @@ func (c *Client) PerformRequest(ctx context.Context, opt PerformRequestOptions) 
 				}
 			}
 		}
-
+		if c.headers != nil && len(c.headers) > 0 {
+			for key, value := range c.headers {
+				for _, v := range value {
+					req.Header.Add(key, v)
+				}
+			}
+		}
 		// Set body
 		if opt.Body != nil {
 			err = req.SetBody(opt.Body, gzipEnabled)

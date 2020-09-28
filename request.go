@@ -31,6 +31,11 @@ func NewRequest(method, url string) (*Request, error) {
 }
 
 // SetBasicAuth wraps http.Request's SetBasicAuth.
+func (r *Request) SetBearerAuth(token string) {
+	r.Header.Set("Authorization", "Bearer "+token)
+}
+
+// SetBasicAuth wraps http.Request's SetBasicAuth.
 func (r *Request) SetBasicAuth(username, password string) {
 	((*http.Request)(r)).SetBasicAuth(username, password)
 }
